@@ -12,9 +12,7 @@ import org.jasig.cas.client.validation.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,14 +28,9 @@ public class CommonController {
 
     @Autowired
     private Environment env;
-//
-//    @Resource
-//    private SqlService sqlService;
-
 
     @Autowired
     private RestTemplate restTemplate;
-
 
     @Autowired
     private UserService userService;
@@ -73,10 +66,10 @@ public class CommonController {
     public void login(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
 
         Object attribute = session.getAttribute("_const_cas_assertion_");
-        String loginName = null;
+        String id = null;
         if(null != attribute) {
             Assertion assertion = (Assertion)attribute;
-            loginName = assertion.getPrincipal().getName();
+            id = assertion.getPrincipal().getName();
 
             Map<String, Object> att = assertion.getPrincipal().getAttributes();
         } else {
@@ -105,7 +98,7 @@ public class CommonController {
         }
     }
 
-//
+
 //    @ApiOperation(value="统一查询接口",notes="接口参数为String的查询接口",httpMethod = "GET")
 //    @RequestMapping(value="jsonData",method= RequestMethod.GET)
 //    public Object jsonData(@RequestParam(value = "params", required = false, defaultValue = "") String params){

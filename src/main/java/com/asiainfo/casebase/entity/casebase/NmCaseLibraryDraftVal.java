@@ -1,4 +1,4 @@
-package com.sample;
+package com.asiainfo.casebase.entity.casebase;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

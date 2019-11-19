@@ -33,7 +33,7 @@ public class JpaDataSourceConfig {
     @Autowired
     private Environment env;
 
-    private String entity = "com.asiainfo.operwork.entity.other";
+    private String entity = "com.asiainfo.casebase.entity";
 
 
     @Bean(name = "primaryJdbcTemplate")
@@ -42,7 +42,7 @@ public class JpaDataSourceConfig {
     }
 
     @Bean(name = "dynamicDataSource")
-    public DataSource dynamicDataSource () {//将数据源id存入集合并传入方法
+    public DataSource dynamicDataSource () {
 
         DynamicDataSource dds = new DynamicDataSource();
         Map<Object, Object> map = new HashMap<>();
@@ -50,11 +50,9 @@ public class JpaDataSourceConfig {
         String dataSourceStr = env.getProperty("spring.datasource.names");
         String [] dataSourceNameList = dataSourceStr.split(",");
 
-        //根据数据源枚举值，获取数据源配置并创建DataSource对象
         Binder binder = Binder.get(env);
 
         for(String dbName:dataSourceNameList){
-
             Properties dataSourceInfo = binder.bind("spring.datasource."+dbName, Bindable.of(Properties.class)).get();
             HikariConfig config = new HikariConfig(dataSourceInfo);
             HikariDataSource dataSource  = new HikariDataSource(config);
@@ -77,6 +75,7 @@ public class JpaDataSourceConfig {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         //需要进行测试，确定Oracle1的动态数据源是否可用
         vendorAdapter.setDatabasePlatform(env.getProperty("hibernate.mysql.dialect"));
+
         vendorAdapter.setShowSql(true);
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);

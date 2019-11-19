@@ -1,4 +1,4 @@
-package com.sample;
+package com.asiainfo.casebase.entity.casebase;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -42,7 +42,7 @@ public class NmCaseLibraryCommentVal {
     @Column(name = "created_by_cn",length = 10)
     private String createdByCn;
 
-    /评论时间
+    //评论时间
     @ApiModelProperty(value="评论时间")
     @Column(name = "created_time")
     private Date createdTime;

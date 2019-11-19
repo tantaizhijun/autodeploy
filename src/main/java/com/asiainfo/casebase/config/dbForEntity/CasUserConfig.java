@@ -2,17 +2,14 @@
 //
 //import com.zaxxer.hikari.HikariConfig;
 //import com.zaxxer.hikari.HikariDataSource;
-//import lombok.extern.slf4j.Slf4j;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Qualifier;
 //import org.springframework.boot.context.properties.bind.Bindable;
 //import org.springframework.boot.context.properties.bind.Binder;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
-//import org.springframework.context.annotation.Primary;
 //import org.springframework.core.env.Environment;
 //import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-//import org.springframework.jdbc.core.JdbcTemplate;
 //import org.springframework.orm.jpa.JpaTransactionManager;
 //import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 //import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -23,20 +20,15 @@
 //import java.util.Properties;
 //
 ///**
-// * @Desc 本系统: 案例库数据源配置
+// * @Desc cas表数据库连接配置
 // **/
-//@Slf4j
 //@Configuration
 //@EnableTransactionManagement
 //@EnableJpaRepositories(
-//        entityManagerFactoryRef = "entityManagerFactoryCaseBase",    //实体管理工厂引用名称
-//        transactionManagerRef = "transactionManagerCaseBase",        //事务管理工厂引用名称
-//        basePackages = {"com.asiainfo.casebase.repository.casebase"})        //Repository所在位置
-//public class CaseBaseConfig {
-//
-//    private String entityPackage = "com.asiainfo.casebase.entity.casebase";
-//
-//    private String databasePrefix = "spring.datasource.default";
+//        entityManagerFactoryRef = "entityManagerFactoryCas",    //实体管理工厂引用名称
+//        transactionManagerRef = "transactionManagerCas",        //事务管理工厂引用名称
+//        basePackages = {"com.asiainfo.casebase.repository.casUser"})        //Repository所在位置
+//public class CasUserConfig {
 //
 //    @Autowired
 //    private Environment env;
@@ -44,36 +36,38 @@
 //    @Autowired
 //    private PlatformUtil platformUtil;
 //
+//    private String datasourcePrefix = "spring.datasource.cas";
 //
-//    @Primary
-//    @Bean(name = "defaultDataSource")
-//    @Qualifier("defaultDataSource")
-//    public DataSource defaultDataSource() {
+//    private String entity = "com.asiainfo.casebase.entity.casUser";
+//
+//    @Bean(name = "casDataSource")
+//    @Qualifier("casDataSource")
+//    public DataSource casDataSource() {
 //        Binder binder = Binder.get(env);
-//        Properties dataSourceInfo = binder.bind(databasePrefix, Bindable.of(Properties.class)).get();
+//
+//        Properties dataSourceInfo = binder.bind(datasourcePrefix, Bindable.of(Properties.class)).get();
 //        HikariConfig config = new HikariConfig(dataSourceInfo);
 //        HikariDataSource dataSource  = new HikariDataSource(config);
 //        return dataSource;
 //    }
-//    @Primary
-//    @Bean(name = "entityManagerFactoryCaseBase")
-//    public LocalContainerEntityManagerFactoryBean entityManagerFactoryCaseBase() {
+//
+//    @Bean(name = "entityManagerFactoryCas")
+//    public LocalContainerEntityManagerFactoryBean entityManagerFactoryCas() {
 //        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-//        vendorAdapter.setDatabasePlatform(platformUtil.getPlatform(databasePrefix));
+//        vendorAdapter.setDatabasePlatform(platformUtil.getPlatform(datasourcePrefix));
 //        vendorAdapter.setShowSql(true);
 //        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 //        factory.setJpaVendorAdapter(vendorAdapter);
-//        factory.setPackagesToScan(entityPackage);
-//        factory.setDataSource(defaultDataSource());
+//        factory.setPackagesToScan(entity);
+//        factory.setDataSource(casDataSource());
 //        return factory;
 //    }
 //
 //    /**
 //     * 配置事物管理器
 //     */
-//    @Primary
-//    @Bean(name = "transactionManagerCaseBase")
+//    @Bean(name = "transactionManagerCas")
 //    public PlatformTransactionManager transactionManagerPrimary() {
-//        return new JpaTransactionManager(entityManagerFactoryCaseBase().getObject());
+//        return new JpaTransactionManager(entityManagerFactoryCas().getObject());
 //    }
 //}

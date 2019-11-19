@@ -66,3 +66,20 @@ CREATE TABLE `nm_case_library_comment_val` (
   `created_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '评论时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- sql 配置表
+CREATE TABLE `case_base_sql` (
+  `sql_id` varchar(255) NOT NULL COMMENT 'sqlId,',
+  `sql_name` varchar(255) DEFAULT NULL COMMENT 'sql名称',
+  `sql_desc` varchar(255) DEFAULT NULL COMMENT 'sql说明',
+  `sql_type` varchar(255) DEFAULT NULL COMMENT 'sql类型',
+  `sql` longtext NOT NULL COMMENT 'sql内容',
+  `params` varchar(1000) DEFAULT NULL,
+  `dbstr` varchar(64) DEFAULT NULL COMMENT '数据源配置名称',
+  `status` varchar(16) DEFAULT NULL COMMENT '状态',
+  `oper_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `oper_by` varchar(30) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`sql_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

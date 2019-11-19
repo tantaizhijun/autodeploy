@@ -1,6 +1,15 @@
-package com.sample;
+package com.asiainfo.casebase.entity.casebase;
 
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import javax.persistence.*;
+import java.util.Date;
+
+@Data
+@Entity
+@Table(name = "nm_case_library_his_val")
 public class NmCaseLibraryHisVal {
 
     @ApiModelProperty(value="主键Id")
