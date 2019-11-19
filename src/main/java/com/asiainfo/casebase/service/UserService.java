@@ -1,7 +1,6 @@
 package com.asiainfo.casebase.service;
 
 import com.alibaba.fastjson.JSONObject;
-
 import com.asiainfo.casebase.entity.casUser.CasUser;
 import com.asiainfo.casebase.repository.casUser.CasUserRepository;
 import com.asiainfo.casebase.responseEntity.ResultData;
@@ -9,10 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -21,7 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * @Desc 用户相关业务
@@ -47,9 +44,10 @@ public class UserService {
         if(null == id) {
             return null;
         }
-        List<CasUser> userList = userRepository.queryWithId(id);
-        if(userList != null && userList.size() > 0) {
-            return userList.get(0);
+        Optional<CasUser> casUserOptional = userRepository.findById(id);
+
+        if(casUserOptional != null && casUserOptional.isPresent()) {
+            return casUserOptional.get();
         }
         log.error("从cas表获取用户为空，id:" + id);
         return null;
@@ -61,7 +59,6 @@ public class UserService {
     public CasUser findUserFromCas() {
         return findUserById(getUserIdFromCas());
     }
-
 
     /**
      * @Desc 从cas中获取用户ID

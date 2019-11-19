@@ -1,7 +1,7 @@
 //package com.asiainfo.casebase.service;
 //
 //
-//import com.asiainfo.casebase.config.DynamicDataSourceContextHolder;
+//import com.asiainfo.casebase.config.db.DataSourceHolder;
 //
 //import com.asiainfo.casebase.responseEntity.ResultData;
 //import com.asiainfo.casebase.utils.DbUtil;
@@ -36,7 +36,7 @@
 //    public ResultData executeSql(Map map) {
 //        try {
 ////        EncryptResponseBodyAdvice.setEncryptStatus(false);
-//            DynamicDataSourceContextHolder.setDataSource("default");
+//            DataSourceHolder.setDataSource("default");
 //
 //            List<Map<String, Object>> result = new ArrayList<>();
 //            String id = (String) map.get("id");
@@ -59,12 +59,12 @@
 //            if (dbstr != null) {
 //                dbstr = dbstr.replaceAll("@", "-");
 //                log.info("切换数据源为：" + dbstr);
-//                DynamicDataSourceContextHolder.setDataSource(dbstr);
+//                DataSourceHolder.setDataSource(dbstr);
 //            } else {
 //                //根据查询的字段设置数据源
 //                String dbstr1 = onlineexamSql.getDbstr();
 //                log.info("切换数据源为：" + dbstr1);
-//                DynamicDataSourceContextHolder.setDataSource(dbstr1);
+//                DataSourceHolder.setDataSource(dbstr1);
 //            }
 //
 //            log.info("数据源切换完毕！准备向sql中替换参数并执行");
