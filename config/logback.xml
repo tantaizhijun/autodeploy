@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- debug="false"关闭logback启动时打印自身的日志信息 -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <appender name="info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/run.log</file>
+        <!-- 定义窗口滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/run.%d{yyyyMMdd}.%i.log.gz</fileNamePattern>
+            <maxHistory>60</maxHistory>
+            <!-- 按时间回滚的同时，按文件大小来回滚 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- encoders 作用是将logger事件转换成字节数组，并将字节数组写入到输出流 -->
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %msg：日志消息，%n是换行符 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread][%level] %logger{0}:%L - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <!-- 指定要对级别为ERROR日志信息过滤 -->
+            <OnMismatch>DENY</OnMismatch>
+            <!-- 如果不匹配，则拒绝处理 -->
+            <OnMatch>ACCEPT</OnMatch>
+            <!-- 如果匹配，则立即处理 -->
+        </filter>
+        <file>./logs/error.log</file>
+        <!-- 定义窗口滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/error.%d{yyyyMMdd}.%i.log.gz</fileNamePattern>
+            <maxHistory>60</maxHistory>
+            <!-- 按时间回滚的同时，按文件大小来回滚 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- encoders 作用是将logger事件转换成字节数组，并将字节数组写入到输出流 -->
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %msg：日志消息，%n是换行符 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread][%level] %logger{0}:%L - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="warn" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <!-- 指定要对级别为WARN日志信息过滤 -->
+            <OnMismatch>DENY</OnMismatch>
+            <!-- 如果不匹配，则拒绝处理 -->
+            <OnMatch>ACCEPT</OnMatch>
+            <!-- 如果匹配，则立即处理 -->
+        </filter>
+        <file>./logs/warn.log</file>
+        <!-- 定义窗口滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/warn.%d{yyyyMMdd}.%i.log.gz</fileNamePattern>
+            <maxHistory>60</maxHistory>
+            <!-- 按时间回滚的同时，按文件大小来回滚 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- encoders 作用是将logger事件转换成字节数组，并将字节数组写入到输出流 -->
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %msg：日志消息，%n是换行符 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread][%level] %logger{0}:%L - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <root level="info">
+        <!-- root logger，定义级别为debug -->
+        <!--<appender-ref ref="STDOUT"/> -->
+        <appender-ref ref="info"/>
+        <appender-ref ref="warn"/>
+        <appender-ref ref="error"/>
+        <!--将名为STDOUT的appender添加到root logger下 -->
+    </root>
+</configuration>
