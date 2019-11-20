@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.Date;
 /**
- * @Desc  案例库   草稿
+ * @Desc  案例库--草稿表
  */
 @Data
 @Entity

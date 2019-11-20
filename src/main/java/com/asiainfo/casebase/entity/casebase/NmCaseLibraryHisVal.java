@@ -10,6 +10,10 @@ import java.util.Date;
  * @Desc  案例库--历史表
  */
 
+/**
+ * @Desc  案例库--历史表
+ */
+
 @Data
 @Entity
 @Table(name = "nm_case_library_his_val")

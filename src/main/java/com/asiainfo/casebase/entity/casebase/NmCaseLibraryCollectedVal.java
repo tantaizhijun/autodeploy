@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * @Desc  案例库  收藏
+ * @Desc  案例库--收藏表
  */
 @Data
 @Entity

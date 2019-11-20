@@ -1,4 +1,4 @@
-package com.asiainfo.casebase.repository.casUser;
+package com.asiainfo.casebase.repository.casebase;
 
 import com.asiainfo.casebase.entity.casebase.NmCaseLibraryDraftVal;
 import org.springframework.data.jpa.repository.JpaRepository;

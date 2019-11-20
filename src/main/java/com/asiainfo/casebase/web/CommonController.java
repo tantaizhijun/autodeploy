@@ -3,6 +3,7 @@ package com.asiainfo.casebase.web;
 
 import com.asiainfo.casebase.entity.casUser.CasUser;
 import com.asiainfo.casebase.responseEntity.ResultData;
+import com.asiainfo.casebase.service.SqlService;
 import com.asiainfo.casebase.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +35,9 @@ public class CommonController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SqlService sqlService;
 
 
     /***
@@ -99,25 +103,25 @@ public class CommonController {
     }
 
 
-//    @ApiOperation(value="统一查询接口",notes="接口参数为String的查询接口",httpMethod = "GET")
-//    @RequestMapping(value="jsonData",method= RequestMethod.GET)
-//    public Object jsonData(@RequestParam(value = "params", required = false, defaultValue = "") String params){
-//        return sqlService.executeSql(params);
-//    }
-//
-//    @ApiOperation(value="统一查询接口",notes="接口参数为Map的查询接口",httpMethod = "POST")
-//    @RequestMapping(value="jsonDataMap",method= RequestMethod.POST)
-//    public ResultData jsonDataMap(@RequestBody Map<String, String> map){
-//        try {
-//            ResultData resultData = sqlService.executeSql(map);
-//            if(resultData.isSuccess()) {
-//                return new ResultData(200,"查询成功",true,resultData.getData());
-//            }
-//            return new ResultData(-1,resultData.getMsg(),false);
-//        }catch (Exception e){
-//            log.error("查询异常",e);
-//            return new ResultData(-1,"查询失败",false);
-//        }
-//
-//    }
+    @ApiOperation(value="统一查询接口",notes="接口参数为String的查询接口",httpMethod = "GET")
+    @RequestMapping(value="jsonData",method= RequestMethod.GET)
+    public Object jsonData(@RequestParam(value = "params", required = false, defaultValue = "") String params){
+        return sqlService.executeSql(params);
+    }
+
+    @ApiOperation(value="统一查询接口",notes="接口参数为Map的查询接口",httpMethod = "POST")
+    @RequestMapping(value="jsonDataMap",method= RequestMethod.POST)
+    public ResultData jsonDataMap(@RequestBody Map<String, String> map){
+        try {
+            ResultData resultData = sqlService.executeSql(map);
+            if(resultData.isSuccess()) {
+                return new ResultData(200,"查询成功",true,resultData.getData());
+            }
+            return new ResultData(-1,resultData.getMsg(),false);
+        }catch (Exception e){
+            log.error("查询异常",e);
+            return new ResultData(-1,"查询失败",false);
+        }
+
+    }
 }
