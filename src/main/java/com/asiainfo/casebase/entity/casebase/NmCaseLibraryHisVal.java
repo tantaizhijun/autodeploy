@@ -6,6 +6,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+/**
+ * @Desc  案例库--历史表
+ */
 
 @Data
 @Entity
@@ -72,5 +75,10 @@ public class NmCaseLibraryHisVal {
     @ApiModelProperty(value="修改时间")
     @Column(name = "update_time")
     private Date updateTime;
+
+    //状态（保存，更新，删除）
+    @ApiModelProperty(value="状态（保存，更新，删除）")
+    @Column(name = "state",length=30)
+    private String state;
 
 }
