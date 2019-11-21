@@ -40,6 +40,36 @@ public class ArticleWeb {
         }
     }
 
+    /**
+     * @Desc 删除帖子
+     **/
+    @ApiOperation(value="删除帖子",notes="删除帖子",httpMethod = "POST")
+    @RequestMapping(value = "/delete",method = RequestMethod.GET)
+    public ResultData delete(@RequestParam Long caseLibraryCurId) {
+        try{
+            ResultData resultData = articleService.delete(caseLibraryCurId);
+            return resultData;
+        }catch (Exception e){
+            log.error("删除帖子异常",e);
+            return new ResultData(-1,"删除失败",false);
+        }
+    }
+
+
+    /**
+     * @Desc 收藏帖子
+     **/
+    @ApiOperation(value="收藏帖子",notes="收藏帖子",httpMethod = "POST")
+    @RequestMapping(value = "/collect",method = RequestMethod.GET)
+    public ResultData collect(@RequestParam Long caseLibraryCurId) {
+        try{
+            ResultData resultData = articleService.collect(caseLibraryCurId);
+            return resultData;
+        }catch (Exception e){
+            log.error("收藏帖子异常",e);
+            return new ResultData(-1,"收藏失败",false);
+        }
+    }
 
 
 
