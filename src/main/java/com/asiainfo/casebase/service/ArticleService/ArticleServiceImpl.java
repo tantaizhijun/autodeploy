@@ -67,7 +67,7 @@ public class ArticleServiceImpl implements ArticleService {
 
             NmCaseLibraryCurVal savedCur = libraryCurRepository.save(caseLibraryCur);
             libraryHisVal.setCaseLibraryId(savedCur.getId());
-            int i = 1/0;
+
 
             libraryHisRepository.save(libraryHisVal);
 

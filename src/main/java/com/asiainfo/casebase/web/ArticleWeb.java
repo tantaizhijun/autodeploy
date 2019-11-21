@@ -7,10 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Desc 帖子相关接口
@@ -43,7 +40,7 @@ public class ArticleWeb {
     /**
      * @Desc 删除帖子
      **/
-    @ApiOperation(value="删除帖子",notes="删除帖子",httpMethod = "POST")
+    @ApiOperation(value="删除帖子",notes="删除帖子",httpMethod = "GET")
     @RequestMapping(value = "/delete",method = RequestMethod.GET)
     public ResultData delete(@RequestParam Long caseLibraryCurId) {
         try{
@@ -59,7 +56,7 @@ public class ArticleWeb {
     /**
      * @Desc 收藏帖子
      **/
-    @ApiOperation(value="收藏帖子",notes="收藏帖子",httpMethod = "POST")
+    @ApiOperation(value="收藏帖子",notes="收藏帖子",httpMethod = "GET")
     @RequestMapping(value = "/collect",method = RequestMethod.GET)
     public ResultData collect(@RequestParam Long caseLibraryCurId) {
         try{
@@ -70,11 +67,6 @@ public class ArticleWeb {
             return new ResultData(-1,"收藏失败",false);
         }
     }
-
-
-
-
-
 
 
 
