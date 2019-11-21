@@ -41,7 +41,7 @@ public class UserService {
      * @Desc 根据id查询用户，从cas表
      **/
     public CasUser findUserById(String id) {
-        if(null == id) {
+        if(null == id || "".equals(id)) {
             return null;
         }
         Optional<CasUser> casUserOptional = userRepository.findById(id);
@@ -76,7 +76,7 @@ public class UserService {
             return id;
         }
         log.error("从cas获取用户id为空");
-        return "user";
+        return "";
     }
 
 

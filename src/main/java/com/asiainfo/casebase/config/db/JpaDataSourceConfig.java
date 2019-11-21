@@ -25,15 +25,15 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef="entityManagerFactoryMysql",  //实体管理工厂引用名称
-        transactionManagerRef="transactionManagerMysql",      //事务管理工厂引用名称
-        basePackages= {"com.asiainfo.casebase.repository"}) //设置Repository所在位置
+        entityManagerFactoryRef="entityManagerFactoryForCaseBase",  //实体管理工厂引用名称
+        transactionManagerRef="transactionManagerForCaseBase",      //事务管理工厂引用名称
+        basePackages= {"com.asiainfo.casebase.requestEntity"}) //设置Repository所在位置
 public class JpaDataSourceConfig {
 
     @Autowired
     private Environment env;
 
-    private String entity = "com.asiainfo.casebase.entity";
+    private String entity = "com.asiainfo.casebase.requestEntity";
 
 
     @Bean(name = "primaryJdbcTemplate")
@@ -70,7 +70,7 @@ public class JpaDataSourceConfig {
         return dds;
     }
 
-    @Bean(name = "entityManagerFactoryMysql")
+    @Bean(name = "entityManagerFactoryForCaseBase")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary () {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         //需要进行测试，确定Oracle1的动态数据源是否可用
@@ -86,7 +86,7 @@ public class JpaDataSourceConfig {
     /**
      * 配置事物管理器
      */
-    @Bean(name = "transactionManagerMysql")
+    @Bean(name = "transactionManagerForCaseBase")
     public PlatformTransactionManager transactionManagerPrimary() {
         return new JpaTransactionManager(entityManagerFactoryPrimary().getObject());
     }

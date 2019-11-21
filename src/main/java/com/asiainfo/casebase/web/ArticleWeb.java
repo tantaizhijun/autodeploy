@@ -5,7 +5,6 @@ import com.asiainfo.casebase.responseEntity.ResultData;
 import com.asiainfo.casebase.service.ArticleService.ArticleService;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;

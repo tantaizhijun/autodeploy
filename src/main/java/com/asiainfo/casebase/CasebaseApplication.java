@@ -1,12 +1,11 @@
 package com.asiainfo.casebase;
 
+import net.unicon.cas.client.configuration.EnableCasClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
-//@EnableCasClient
-@EnableSwagger2
+@EnableCasClient
 public class CasebaseApplication {
 
 	public static void main(String[] args) {

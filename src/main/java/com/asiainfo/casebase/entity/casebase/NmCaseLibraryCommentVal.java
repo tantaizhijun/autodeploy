@@ -15,17 +15,17 @@ public class NmCaseLibraryCommentVal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false,length = 11)
-    private long id;
+    private Long id;
 
     //案例库id
     @ApiModelProperty(value="案例库id")
     @Column(name = "case_library_id",length = 11)
-    private long caseLibraryId;
+    private Long caseLibraryId;
 
     //评论id(默认-1)
     @ApiModelProperty(value="评论id(默认-1)")
     @Column(name = "case_id",length = 11)
-    private long caseId;
+    private Long caseId;
 
     //评论内容
     @ApiModelProperty(value="评论内容")

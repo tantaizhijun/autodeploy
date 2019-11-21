@@ -23,12 +23,12 @@ public class NmCaseLibraryHisVal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false,length = 11)
-    private long id;
+    private Long id;
 
     //关联id
     @ApiModelProperty(value="关联id")
     @Column(name = "case_library_id",nullable = false,length = 11)
-    private long caseLibraryId;
+    private Long caseLibraryId;
 
     //所属领域：专家池大类名-专家池小类名
     @ApiModelProperty(value="所属领域：专家池大类名-专家池小类名")
