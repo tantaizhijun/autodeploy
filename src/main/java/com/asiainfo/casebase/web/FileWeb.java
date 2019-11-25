@@ -1,15 +1,13 @@
 package com.asiainfo.casebase.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.asiainfo.casebase.responseEntity.ResultData;
 import com.asiainfo.casebase.utils.commonUtil;
 import io.swagger.annotations.ApiModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -32,6 +30,45 @@ public class FileWeb {
 
     @Autowired
     private Environment env;
+
+
+    @RequestMapping("/upfile")
+    @ResponseBody
+    public void umeditorUpload(@RequestParam("upfile") MultipartFile file,HttpServletRequest request,HttpServletResponse response)
+            throws IllegalStateException, IOException {
+
+        String uploadPath = env.getProperty("file_upload");
+
+        String fileName = "." + file.getOriginalFilename();
+        String type = "." + fileName.split("\\.")[1];
+
+        String newFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        File dir = new File(uploadPath, newFileName);
+
+        String src = uploadPath + "/" + newFileName;
+
+        JSONObject json = new JSONObject();
+        if (!dir.exists()) {
+            dir.mkdirs();
+            json.put("state", "SUCCESS");
+            json.put("original", file.getOriginalFilename());
+            json.put("size", file.getSize());
+            json.put("url", src);
+            json.put("title", newFileName);
+            json.put("type", type);
+        } else {
+            json.put("state", "FALSE");
+        }
+        file.transferTo(dir);
+        response.setContentType("text/html; charset=UTF-8");
+
+        PrintWriter writer = response.getWriter();
+        writer.write(json.toString());
+        writer.close();
+    }
+
+
 
     /**
      * 实现文件上传
