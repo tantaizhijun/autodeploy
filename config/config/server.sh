@@ -2,17 +2,17 @@
 #description: springboot_redis
 export LANG=zh_CN.UTF8
 
-PRG_KEYWORD=onlineexam
-PRG_HOME=/ainmc/work/onlineexam
+PRG_KEYWORD=casebase
+PRG_HOME=/ainmc/work/casebase
 PRG=$PRG_HOME/server.sh
 
 JAVA_HOME=/aifs01/work/bigdata/jdk1.8.0_111
 LOGBACK="--logging.config=$PRG_HOME/config/logback.xml"
 #PRG_RUN_USER=nmcuser
-jvmOpt="-Xms512m -Xmx1024m -XX:PermSize=256M -XX:MaxPermSize=512m"
+jvmOpt="-Xms1024m -Xmx1024m -XX:PermSize=512M -XX:MaxPermSize=1024m"
 pidFile=$PRG_HOME/server.pid
 
-MAIN_CLASS=$PRG_HOME/onlineexam-0.0.1-SNAPSHOT.jar
+MAIN_CLASS=$PRG_HOME/casebase-0.0.1-SNAPSHOT.jar
 cd $PRG_HOME
 function start(){
         echo "will start $PRG_KEYWORD"

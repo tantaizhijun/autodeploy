@@ -25,8 +25,8 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef="entityManagerFactoryForCaseBase",  //实体管理工厂引用名称
-        transactionManagerRef="transactionManagerForCaseBase",      //事务管理工厂引用名称
+        entityManagerFactoryRef="entityManagerFactoryForCaseBase1",  //实体管理工厂引用名称
+        transactionManagerRef="transactionManagerForCaseBase1",      //事务管理工厂引用名称
         basePackages= {"com.asiainfo.casebase.requestEntity"}) //设置Repository所在位置
 public class JpaDataSourceConfig {
 
@@ -56,12 +56,16 @@ public class JpaDataSourceConfig {
             Properties dataSourceInfo = binder.bind("spring.datasource."+dbName, Bindable.of(Properties.class)).get();
             HikariConfig config = new HikariConfig(dataSourceInfo);
             HikariDataSource dataSource  = new HikariDataSource(config);
-            dataSource.setLeakDetectionThreshold(60 * 1000);
-            dataSource.setMaxLifetime(60000);
-            dataSource.setIdleTimeout(60000);
-            dataSource.setMaximumPoolSize(15);
-            dataSource.setMinimumIdle(10);
-            dataSource.setConnectionTimeout(60000);
+
+//            dataSource.setLeakDetectionThreshold(60 * 1000 * 2);
+            dataSource.setMaxLifetime(Long.parseLong(env.getProperty("db.max-lifetime")));
+            dataSource.setIdleTimeout(Long.parseLong(env.getProperty("db.idle-timeout")));
+            dataSource.setMaximumPoolSize(Integer.parseInt(env.getProperty("db.maximum-pool-size")));
+            //最小空闲数
+            dataSource.setMinimumIdle(Integer.parseInt(env.getProperty("db.minimum-idle")));
+            dataSource.setConnectionTimeout(Long.parseLong(env.getProperty("db.connection-timeout")));
+            //设定连接校验的超时时间
+            dataSource.setValidationTimeout(Long.parseLong(env.getProperty("db.validation-timeout")));
 
             map.put(dbName,dataSource);
         }
@@ -70,7 +74,7 @@ public class JpaDataSourceConfig {
         return dds;
     }
 
-    @Bean(name = "entityManagerFactoryForCaseBase")
+    @Bean(name = "entityManagerFactoryForCaseBase1")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary () {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         //需要进行测试，确定Oracle1的动态数据源是否可用
@@ -86,7 +90,7 @@ public class JpaDataSourceConfig {
     /**
      * 配置事物管理器
      */
-    @Bean(name = "transactionManagerForCaseBase")
+    @Bean(name = "transactionManagerForCaseBase1")
     public PlatformTransactionManager transactionManagerPrimary() {
         return new JpaTransactionManager(entityManagerFactoryPrimary().getObject());
     }

@@ -23,10 +23,10 @@ public class ArticleWeb {
     private ArticleService articleService;
 
     /**
-     * @Desc 发布帖子
+     * @Desc 保存或更新帖子
      **/
-    @ApiOperation(value="发布帖子",notes="发布帖子",httpMethod = "POST")
-    @RequestMapping(value = "/save",method = RequestMethod.POST)
+    @ApiOperation(value="保存或更新帖子",notes="保存或更新帖子",httpMethod = "POST")
+    @RequestMapping(value = "/saveOrUpdate",method = RequestMethod.POST)
     public ResultData save(@RequestBody NmCaseLibraryCurVal libraryCurVal) {
         try{
             ResultData resultData = articleService.saveOrUpdate(libraryCurVal);

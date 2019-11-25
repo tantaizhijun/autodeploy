@@ -38,15 +38,14 @@ public class ArticleServiceImpl implements ArticleService {
     private UserService userService;
 
 
-    @Transactional(value = "transactionManagerForCaseBase")
+    @Transactional(value = "transactionManagerCaseBase")
     @Override
     public ResultData saveOrUpdate(NmCaseLibraryCurVal caseLibraryCur) {
 
-
-            CasUser casUser = userService.findUserFromCas();
-            if(casUser == null) {
-                return new ResultData(-1,"获取用户信息失败",false);
-            }
+        CasUser casUser = userService.findUserFromCas();
+        if (casUser == null) {
+            return new ResultData(-1, "获取用户信息失败", false);
+        }
         try {
             Date date = new Date();
             caseLibraryCur.setCreated(date);
@@ -57,9 +56,9 @@ public class ArticleServiceImpl implements ArticleService {
             caseLibraryCur.setUpdateByCn(casUser.getName());
 
             NmCaseLibraryHisVal libraryHisVal = new NmCaseLibraryHisVal();
-            BeanUtils.copyProperties(caseLibraryCur,libraryHisVal);
+            BeanUtils.copyProperties(caseLibraryCur, libraryHisVal);
             libraryHisVal.setId(null);
-            if(caseLibraryCur.getId() == null) {
+            if (caseLibraryCur.getId() == null) {
                 libraryHisVal.setState("保存");
             } else {
                 libraryHisVal.setState("更新");
@@ -68,13 +67,12 @@ public class ArticleServiceImpl implements ArticleService {
             NmCaseLibraryCurVal savedCur = libraryCurRepository.save(caseLibraryCur);
             libraryHisVal.setCaseLibraryId(savedCur.getId());
 
-
             libraryHisRepository.save(libraryHisVal);
 
-            return new ResultData(200,"保存成功",true);
-        }catch (Exception e){
-            log.error("帖子保存异常",e);
-            return new ResultData(-1,"保存失败",false);
+            return new ResultData(200, "保存成功", true);
+        } catch (Exception e) {
+            log.error("帖子保存异常", e);
+            return new ResultData(-1, "保存失败", false);
         }
     }
 
@@ -82,19 +80,19 @@ public class ArticleServiceImpl implements ArticleService {
     public ResultData delete(Long caseLibraryCurId) {
         try {
             Optional<NmCaseLibraryCurVal> optional = libraryCurRepository.findById(caseLibraryCurId);
-            if(!optional.isPresent()) {
-                log.error("未查询到该条信息,id:{}",caseLibraryCurId);
-                return new ResultData(-1,"删除失败",false);
+            if (!optional.isPresent()) {
+                log.error("未查询到该条信息,id:{}", caseLibraryCurId);
+                return new ResultData(-1, "删除失败", false);
             }
             CasUser casUser = userService.findUserFromCas();
-            if(casUser == null){
-                return new ResultData(-1,"获取用户信息失败",false);
+            if (casUser == null) {
+                return new ResultData(-1, "获取用户信息失败", false);
             }
 
             NmCaseLibraryCurVal libraryCurVal = optional.get();
 
             NmCaseLibraryHisVal libraryHisVal = new NmCaseLibraryHisVal();
-            BeanUtils.copyProperties(libraryCurVal,libraryHisVal);
+            BeanUtils.copyProperties(libraryCurVal, libraryHisVal);
             libraryHisVal.setCaseLibraryId(caseLibraryCurId);
             libraryHisVal.setId(null);
             libraryHisVal.setState("删除");
@@ -103,10 +101,10 @@ public class ArticleServiceImpl implements ArticleService {
 
             libraryHisRepository.save(libraryHisVal);
             libraryCurRepository.deleteById(caseLibraryCurId);
-            return new ResultData(200,"删除成功",true);
-        }catch (Exception e){
-            log.error("删除异常:{}",e);
-            return new ResultData(-1,"删除失败",false);
+            return new ResultData(200, "删除成功", true);
+        } catch (Exception e) {
+            log.error("删除异常:{}", e);
+            return new ResultData(-1, "删除失败", false);
         }
     }
 
@@ -114,8 +112,8 @@ public class ArticleServiceImpl implements ArticleService {
     public ResultData collect(Long caseLibraryCurId) {
         try {
             CasUser casUser = userService.findUserFromCas();
-            if(casUser == null){
-                return new ResultData(-1,"获取用户信息失败",false);
+            if (casUser == null) {
+                return new ResultData(-1, "获取用户信息失败", false);
             }
 
             NmCaseLibraryCollectedVal collectedVal = new NmCaseLibraryCollectedVal();
@@ -124,10 +122,10 @@ public class ArticleServiceImpl implements ArticleService {
             collectedVal.setCreatedByCn(casUser.getName());
             collectedVal.setCreatedTime(new Date());
             libraryCollectedRepository.save(collectedVal);
-            return new ResultData(200,"收藏成功",true);
-        }catch (Exception e){
+            return new ResultData(200, "收藏成功", true);
+        } catch (Exception e) {
             log.error("收藏失败");
-            return new ResultData(-1,"收藏失败",false);
+            return new ResultData(-1, "收藏失败", false);
         }
     }
 }
