@@ -51,12 +51,12 @@ public class CommonController {
             Assertion assertion = (Assertion)attribute;
             String id = assertion.getPrincipal().getName();
             CasUser casUser = userService.findUserFromCas();
-            try {
-                ResultData data = userService.getAuthedInfo(id);
-                casUser.setAuth(data.getData());
-            }catch (Exception e){
-                log.error("获取权限信息失败");
-            }
+//            try {
+//                ResultData data = userService.getAuthedInfo(id);
+//                casUser.setAuth(data.getData());
+//            }catch (Exception e){
+//                log.error("获取权限信息失败");
+//            }
             return new ResultData(200,"登录成功",true,casUser);
         } else {
             return new ResultData(302,"登录失败",false,null);
