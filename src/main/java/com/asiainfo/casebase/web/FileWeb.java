@@ -2,10 +2,12 @@ package com.asiainfo.casebase.web;
 
 import com.alibaba.fastjson.JSONObject;
 import com.asiainfo.casebase.responseEntity.ResultData;
+import com.asiainfo.casebase.utils.DateUtils;
 import com.asiainfo.casebase.utils.commonUtil;
 import io.swagger.annotations.ApiModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,17 +35,32 @@ public class FileWeb {
     private Environment env;
 
 
+    @Value("image_upload")
+    private String image_upload;
+
+    @Value("file_upload")
+    private String file_upload;
+
+
     @RequestMapping("/upfile")
     @ResponseBody
-    public void umeditorUpload(@RequestParam("upfile") MultipartFile file,HttpServletRequest request,HttpServletResponse response)
-            throws IllegalStateException, IOException {
+    public void umeditorUpload(@RequestParam("upfile") MultipartFile file,
+                               @RequestParam("type") String type,
+                               HttpServletRequest request,
+                               HttpServletResponse response) throws IllegalStateException, IOException {
 
-        String uploadPath = env.getProperty("file_upload");
 
-        String fileName = "." + file.getOriginalFilename();
-        String type = "." + fileName.split("\\.")[1];
+        String uploadPath = "";
+        if ("image".equals(type)) {
+            uploadPath = env.getProperty("image_upload");
+        } else {
+            uploadPath = env.getProperty("file_upload");
+        }
+        String date = DateUtils.dateToStringFormat(new Date(), "yyyy-MM-dd");
+        uploadPath = uploadPath + "/" + date;
 
-        String newFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        String newFileName = commonUtil.getUUID() + "_" + file.getOriginalFilename();
 
         File dir = new File(uploadPath, newFileName);
 
@@ -56,7 +74,6 @@ public class FileWeb {
             json.put("size", file.getSize());
             json.put("url", src);
             json.put("title", newFileName);
-            json.put("type", type);
         } else {
             json.put("state", "FALSE");
         }
@@ -74,16 +91,26 @@ public class FileWeb {
      * 实现文件上传
      * */
     @RequestMapping(value = "upload")
-    public ResultData upload(@RequestParam("file") MultipartFile file){
+    public ResultData upload(@RequestParam("file") MultipartFile file,
+                             @RequestParam("type") String type){
         if(file.isEmpty()){
             return new ResultData(-1,"请选择文件",false);
         }
         String fileName = file.getOriginalFilename();
-        String uploadPath = env.getProperty("file_upload");
+
+
+        String uploadPath = "";
+        if ("image".equals(type)) {
+            uploadPath = env.getProperty("image_upload");
+        } else {
+            uploadPath = env.getProperty("file_upload");
+        }
+        String date = DateUtils.dateToStringFormat(new Date(), "yyyy-MM-dd");
+        uploadPath = uploadPath + "/" + date;
 
         //为了防止文件重复
         String uuid = commonUtil.getUUID();
-        String newFileName = fileName + "." + uuid;
+        String newFileName = uuid + "_" + fileName;
         String destPath = uploadPath + "/" + newFileName;
 
         File dest = new File(destPath);
@@ -115,43 +142,70 @@ public class FileWeb {
      * 实现多文件上传
      * */
     @RequestMapping(value="/multiUpload",method= RequestMethod.POST)
-    public ResultData multiUpload(HttpServletRequest request){
+    public ResultData multiUpload(@RequestParam(value = "type") String type,
+                                  @RequestBody List<MultipartFile> files,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response){
+        if(files == null || files.size() == 0) {
+            files = ((MultipartHttpServletRequest)request).getFiles("files");
+        }
 
-        List<MultipartFile> files = ((MultipartHttpServletRequest)request).getFiles("file");
         if(files.isEmpty()){
             return new ResultData(-1,"上传文件为空",false);
         }
-        String uploadPath = env.getProperty("file_upload");
+
+        String uploadPath = "";
+        if ("image".equals(type)) {
+            uploadPath = env.getProperty("image_upload");
+        } else {
+            uploadPath = env.getProperty("file_upload");
+        }
+        String date = DateUtils.dateToStringFormat(new Date(), "yyyy-MM-dd");
+        uploadPath = uploadPath + "/" + date;
+
         int i = 0;
         ArrayList<Object> retList = new ArrayList<>();
         for(MultipartFile file:files){
             i++;
             if(file.isEmpty()){
                 //todo 有文件为空的处理
-                return new ResultData(-1,"第" + i +"个文件文件为空,上传失败",false);
-            }else{
-                String fileName = file.getOriginalFilename();
-                //为了防止文件重复
-                String uuid = commonUtil.getUUID();
-                String newFileName = fileName + "." + uuid;
-                String destPath = uploadPath + "/" + newFileName;
+                //return new ResultData(-1,"第" + i +"个文件文件为空,上传失败",false);
+                HashMap<String, Object> resultMap = new HashMap<>();
+                resultMap.put("success",false);
+                resultMap.put("fileName",file.getName());
 
-                File dest = new File(destPath);
-                if(!dest.getParentFile().exists()){
-                    dest.getParentFile().mkdirs();
-                }
+                retList.add(resultMap);
+                continue;
+            }else{
                 try {
+                    String fileName = file.getOriginalFilename();
+                    //为了防止文件重复
+                    String uuid = commonUtil.getUUID();
+                    String newFileName = uuid + "_" + fileName;
+                    String destPath = uploadPath + "/" + newFileName;
+
+                    File dest = new File(destPath);
+                    if(!dest.getParentFile().exists()){
+                        dest.getParentFile().mkdirs();
+                    }
+
                     file.transferTo(dest);
-                    HashMap<String, String> resultMap = new HashMap<>();
+                    HashMap<String, Object> resultMap = new HashMap<>();
 
                     resultMap.put("fileName",fileName);
                     resultMap.put("uuid",uuid);
                     resultMap.put("filePath",uploadPath);
                     resultMap.put("absPath",destPath);
+                    resultMap.put("success",true);
                     retList.add(resultMap);
                 }catch (Exception e) {
+                    HashMap<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("success",false);
+                    resultMap.put("fileName",file.getName());
+                    retList.add(resultMap);
                     e.printStackTrace();
-                    return  new ResultData(-1,"上传失败",false);
+                    continue;
+//                    return  new ResultData(-1,"上传失败",false);
                 }
             }
         }
