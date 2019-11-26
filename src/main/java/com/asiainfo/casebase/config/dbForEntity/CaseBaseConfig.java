@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -42,6 +43,9 @@ public class CaseBaseConfig {
     @Autowired
     private PlatformUtil platformUtil;
 
+
+
+    @Primary
     @Bean(name = "defaultDataSource")
     @Qualifier("defaultDataSource")
     public DataSource defaultDataSource() {
@@ -51,6 +55,8 @@ public class CaseBaseConfig {
         HikariDataSource dataSource  = new HikariDataSource(config);
         return dataSource;
     }
+
+    @Primary
     @Bean(name = "entityManagerFactoryCaseBase")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryCaseBase() {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -66,6 +72,7 @@ public class CaseBaseConfig {
     /**
      * 配置事物管理器
      */
+    @Primary
     @Bean(name = "transactionManagerCaseBase")
     public PlatformTransactionManager transactionManagerPrimary() {
         return new JpaTransactionManager(entityManagerFactoryCaseBase().getObject());
