@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -100,20 +101,27 @@ public class ArticleServiceImpl implements ArticleService {
         return new ResultData(200, "删除成功", true);
     }
 
-    @Override
-    public ResultData collect(Long caseLibraryCurId) {
 
+    @Override
+    public ResultData collect(Long caseLibraryCurId,Boolean type) {
         CasUser casUser = userService.findUserFromCas();
         if (casUser == null) {
             return new ResultData(-1, "获取用户信息失败", false);
         }
-
-        NmCaseLibraryCollectedVal collectedVal = new NmCaseLibraryCollectedVal();
-        collectedVal.setCaseLibraryId(caseLibraryCurId);
-        collectedVal.setCreatedBy(casUser.getId());
-        collectedVal.setCreatedByCn(casUser.getName());
-        collectedVal.setCreatedTime(new Date());
-        libraryCollectedRepository.save(collectedVal);
-        return new ResultData(200, "收藏成功", true);
+        if(type) {
+            NmCaseLibraryCollectedVal collectedVal = new NmCaseLibraryCollectedVal();
+            collectedVal.setCaseLibraryId(caseLibraryCurId);
+            collectedVal.setCreatedBy(casUser.getId());
+            collectedVal.setCreatedByCn(casUser.getName());
+            collectedVal.setCreatedTime(new Date());
+            libraryCollectedRepository.save(collectedVal);
+            return new ResultData(200, "收藏成功", true);
+        } else {
+            List<NmCaseLibraryCollectedVal> valList = libraryCollectedRepository.findByCaseLibraryIdAndCreatedBy(casUser.getId(), caseLibraryCurId);
+            if (valList != null && valList.size() > 0) {
+                libraryCollectedRepository.deleteAll(valList);
+            }
+            return new ResultData(200,"取消成功",true);
+        }
     }
 }

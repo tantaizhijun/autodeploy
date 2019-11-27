@@ -21,7 +21,7 @@ public interface ArticleService {
     /**
      * @Desc 收藏文章
      **/
-    ResultData collect(Long caseLibraryCurId);
+    ResultData collect(Long caseLibraryCurId,Boolean type);
 
 
 

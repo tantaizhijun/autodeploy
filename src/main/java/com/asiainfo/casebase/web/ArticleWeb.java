@@ -54,21 +54,22 @@ public class ArticleWeb {
 
 
     /**
-     * @Desc 收藏帖子
+     * @Desc 收藏帖子/取消收藏
+     * @param type true 收藏; false 取消收藏
      **/
-    @ApiOperation(value="收藏帖子",notes="收藏帖子",httpMethod = "GET")
+    @ApiOperation(value="收藏帖子/取消收藏",notes="收藏帖子/取消收藏",httpMethod = "GET")
     @RequestMapping(value = "/collect",method = RequestMethod.GET)
-    public ResultData collect(@RequestParam Long caseLibraryCurId) {
+    public ResultData collect(@RequestParam Long caseLibraryCurId,
+                              @RequestParam Boolean type) {
+        String typeStr = type ? "收藏" : "取消收藏";
         try{
-            ResultData resultData = articleService.collect(caseLibraryCurId);
+            ResultData resultData = articleService.collect(caseLibraryCurId,type);
             return resultData;
         }catch (Exception e){
-            log.error("收藏帖子异常",e);
-            return new ResultData(-1,"收藏失败",false);
+            log.error(typeStr + "帖子异常",e);
+            return new ResultData(-1,typeStr + "失败",false);
         }
     }
-
-
 
 
 

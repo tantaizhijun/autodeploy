@@ -35,11 +35,18 @@ public class FileWeb {
     private Environment env;
 
 
-    @Value("image_upload")
+    @Value("${image_upload}")
     private String image_upload;
 
-    @Value("file_upload")
+    @Value("${file_upload}")
     private String file_upload;
+
+    @Value("${image_relative_path_prefix}")
+    private String imageRelativePrefix;
+
+
+    @Value("${file_relative_path_prefix}")
+    private String fileRelativePrefix;
 
 
     @RequestMapping("/upfile")
@@ -56,9 +63,8 @@ public class FileWeb {
         } else {
             uploadPath = env.getProperty("file_upload");
         }
-        String date = DateUtils.dateToStringFormat(new Date(), "yyyy-MM-dd");
+        String date = DateUtils.dateToStringFormat(new Date(), "yyyyMMdd");
         uploadPath = uploadPath + "/" + date;
-
 
         String newFileName = commonUtil.getUUID() + "_" + file.getOriginalFilename();
 
@@ -100,18 +106,22 @@ public class FileWeb {
 
 
         String uploadPath = "";
+        String relativePathPrefix = "";
+
         if ("image".equals(type)) {
             uploadPath = env.getProperty("image_upload");
+            relativePathPrefix = imageRelativePrefix;
         } else {
             uploadPath = env.getProperty("file_upload");
+            relativePathPrefix = fileRelativePrefix;
         }
-        String date = DateUtils.dateToStringFormat(new Date(), "yyyy-MM-dd");
-        uploadPath = uploadPath + "/" + date;
-
         //为了防止文件重复
         String uuid = commonUtil.getUUID();
         String newFileName = uuid + "_" + fileName;
-        String destPath = uploadPath + "/" + newFileName;
+        String date = DateUtils.dateToStringFormat(new Date(), "yyyyMMdd");
+
+        String subPath =  "/" + date + "/" + newFileName;
+        String destPath =  uploadPath + subPath;
 
         File dest = new File(destPath);
 
@@ -124,7 +134,7 @@ public class FileWeb {
             HashMap<String, String> map = new HashMap<>();
             map.put("fileName",fileName);
             map.put("uuid",uuid);
-            map.put("filePath",uploadPath);
+            map.put("filePath",relativePathPrefix + subPath);
             map.put("absPath",destPath);
 
             return new ResultData(200,"上传成功", true,map);
@@ -146,29 +156,17 @@ public class FileWeb {
                                   @RequestBody List<MultipartFile> files,
                                   HttpServletRequest request,
                                   HttpServletResponse response){
-        if(files == null || files.size() == 0) {
-            files = ((MultipartHttpServletRequest)request).getFiles("files");
-        }
 
         if(files.isEmpty()){
             return new ResultData(-1,"上传文件为空",false);
         }
-
-        String uploadPath = "";
-        if ("image".equals(type)) {
-            uploadPath = env.getProperty("image_upload");
-        } else {
-            uploadPath = env.getProperty("file_upload");
-        }
-        String date = DateUtils.dateToStringFormat(new Date(), "yyyy-MM-dd");
-        uploadPath = uploadPath + "/" + date;
 
         int i = 0;
         ArrayList<Object> retList = new ArrayList<>();
         for(MultipartFile file:files){
             i++;
             if(file.isEmpty()){
-                //todo 有文件为空的处理
+                log.error("第" + i + "个文件为空");
                 //return new ResultData(-1,"第" + i +"个文件文件为空,上传失败",false);
                 HashMap<String, Object> resultMap = new HashMap<>();
                 resultMap.put("success",false);
@@ -179,12 +177,27 @@ public class FileWeb {
             }else{
                 try {
                     String fileName = file.getOriginalFilename();
+
+                    String uploadPath = "";
+                    String relativePathPrefix = "";
+                    if ("image".equals(type)) {
+                        uploadPath = env.getProperty("image_upload");
+                        relativePathPrefix = imageRelativePrefix;
+                    } else {
+                        uploadPath = env.getProperty("file_upload");
+                        relativePathPrefix = fileRelativePrefix;
+                    }
+
                     //为了防止文件重复
                     String uuid = commonUtil.getUUID();
                     String newFileName = uuid + "_" + fileName;
-                    String destPath = uploadPath + "/" + newFileName;
+                    String date = DateUtils.dateToStringFormat(new Date(), "yyyyMMdd");
+
+                    String subPath =  "/" + date + "/" + newFileName;
+                    String destPath =  uploadPath + subPath;
 
                     File dest = new File(destPath);
+
                     if(!dest.getParentFile().exists()){
                         dest.getParentFile().mkdirs();
                     }
@@ -194,11 +207,12 @@ public class FileWeb {
 
                     resultMap.put("fileName",fileName);
                     resultMap.put("uuid",uuid);
-                    resultMap.put("filePath",uploadPath);
+                    resultMap.put("filePath",relativePathPrefix + subPath);
                     resultMap.put("absPath",destPath);
                     resultMap.put("success",true);
                     retList.add(resultMap);
                 }catch (Exception e) {
+                    log.error("上传异常:{}",e);
                     HashMap<String, Object> resultMap = new HashMap<>();
                     resultMap.put("success",false);
                     resultMap.put("fileName",file.getName());
@@ -214,11 +228,16 @@ public class FileWeb {
 
 
     @RequestMapping(value = "/download",method = RequestMethod.GET)
-    public String downLoad(HttpServletResponse response, @RequestParam(value = "fileName") String fileName,
-                           @RequestParam(value = "uuid") String uuid) {
+    public String downLoad(HttpServletResponse response, @RequestParam(value = "filePath") String filePath,
+                           @RequestParam(value = "fileName") String fileName) {
         try {
-            String uploadPath = env.getProperty("file_upload");
-            String absPath = uploadPath + "/" + fileName + "." + uuid;
+
+            if(fileName == null) {
+                fileName = filePath.substring(filePath.lastIndexOf("_"));
+            }
+            String uploadPath = env.getProperty("downloadPath");
+            String absPath = uploadPath + filePath;
+
             File file = new File(absPath);
             if(file.exists()){
                 response.setContentType("application/vnd.ms-excel;charset=UTF-8");

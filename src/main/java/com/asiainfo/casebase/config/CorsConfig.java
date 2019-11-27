@@ -1,6 +1,7 @@
 package com.asiainfo.casebase.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -48,4 +50,24 @@ public class CorsConfig implements WebMvcConfigurer {
         bean.setOrder(0);
         return bean;
     }
+
+
+    /**上传地址*/
+    @Value("${image_upload}")
+    private String imageUpload;
+
+    /**显示相对地址*/
+    @Value("${image_relative_path}")
+    private String imageRelativePath;
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(imageRelativePath).
+                addResourceLocations("file:" + imageUpload + "/");
+    }
+
+
+
+
+
 }
