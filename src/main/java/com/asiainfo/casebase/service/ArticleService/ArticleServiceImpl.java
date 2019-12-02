@@ -102,13 +102,19 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
 
+    /**
+     * @Desc 收藏/取消收藏
+     * @param type boolean  收藏/取消收藏
+     *
+     **/
     @Override
     public ResultData collect(Long caseLibraryCurId,Boolean type) {
         CasUser casUser = userService.findUserFromCas();
         if (casUser == null) {
             return new ResultData(-1, "获取用户信息失败", false);
         }
-        if(type) {
+        List<NmCaseLibraryCollectedVal> collectedValList = libraryCollectedRepository.findByCaseLibraryIdAndCreatedBy(casUser.getId(), caseLibraryCurId);
+        if(collectedValList == null || collectedValList.size() == 0) {
             NmCaseLibraryCollectedVal collectedVal = new NmCaseLibraryCollectedVal();
             collectedVal.setCaseLibraryId(caseLibraryCurId);
             collectedVal.setCreatedBy(casUser.getId());
@@ -117,10 +123,7 @@ public class ArticleServiceImpl implements ArticleService {
             libraryCollectedRepository.save(collectedVal);
             return new ResultData(200, "收藏成功", true);
         } else {
-            List<NmCaseLibraryCollectedVal> valList = libraryCollectedRepository.findByCaseLibraryIdAndCreatedBy(casUser.getId(), caseLibraryCurId);
-            if (valList != null && valList.size() > 0) {
-                libraryCollectedRepository.deleteAll(valList);
-            }
+            libraryCollectedRepository.deleteAll(collectedValList);
             return new ResultData(200,"取消成功",true);
         }
     }
