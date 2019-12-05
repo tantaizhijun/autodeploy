@@ -86,19 +86,13 @@ public class FileWeb {
     }
 
 
-
     /**
      * 实现文件上传
-     * */
+     */
     @RequestMapping(value = "upload")
     public ResultData upload(@RequestParam("file") MultipartFile file,
-                             @RequestParam("type") String type){
-        if(file.isEmpty()){
-            return new ResultData(-1,"请选择文件",false);
-        }
+                             @RequestParam("type") String type) {
         String fileName = file.getOriginalFilename();
-
-
         String uploadPath = "";
         String relativePathPrefix = "";
 
@@ -114,105 +108,93 @@ public class FileWeb {
         String newFileName = uuid + "uuid_" + fileName;
 
         String subPath = "/" + newFileName;
-        String destPath =  uploadPath + subPath;
+        String destPath = uploadPath + subPath;
 
         File dest = new File(destPath);
 
-        if(!dest.getParentFile().exists()){
+        if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
         }
         try {
             file.transferTo(dest);
 
             HashMap<String, String> map = new HashMap<>();
-            map.put("fileName",fileName);
-            map.put("filePath",relativePathPrefix + subPath);
-            return new ResultData(200,"上传成功", true,map);
+            map.put("fileName", fileName);
+            map.put("filePath", relativePathPrefix + subPath);
+            return new ResultData(200, "上传成功", true, map);
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            return new ResultData(-1,"上传失败",false);
+            return new ResultData(-1, "上传失败", false);
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResultData(-1,"上传失败",false);
+            return new ResultData(-1, "上传失败", false);
         }
     }
 
 
     /**
      * 实现多文件上传
-     * */
-    @RequestMapping(value="/multiUpload",method= RequestMethod.POST)
+     */
+    @RequestMapping(value = "/multiUpload", method = RequestMethod.POST)
     public ResultData multiUpload(@RequestParam(value = "type") String type,
                                   @RequestBody List<MultipartFile> files,
                                   HttpServletRequest request,
-                                  HttpServletResponse response){
+                                  HttpServletResponse response) {
 
-        if(files.isEmpty()){
-            return new ResultData(-1,"上传文件为空",false);
+        if (files.isEmpty()) {
+            return new ResultData(-1, "上传文件为空", false);
         }
-
         int i = 0;
         ArrayList<Object> retList = new ArrayList<>();
-        for(MultipartFile file:files){
+        for (MultipartFile file : files) {
             i++;
-            if(file.isEmpty()){
-                log.error("第" + i + "个文件为空");
-                //return new ResultData(-1,"第" + i +"个文件文件为空,上传失败",false);
-                HashMap<String, Object> resultMap = new HashMap<>();
-                resultMap.put("success",false);
-                resultMap.put("fileName",file.getName());
+            try {
+                String fileName = file.getOriginalFilename();
 
-                retList.add(resultMap);
-                continue;
-            }else{
-                try {
-                    String fileName = file.getOriginalFilename();
-
-                    String uploadPath = "";
-                    String relativePathPrefix = "";
-                    if ("image".equals(type)) {
-                        uploadPath = env.getProperty("image_upload");
-                        relativePathPrefix = imageRelativePrefix;
-                    } else {
-                        uploadPath = env.getProperty("file_upload");
-                        relativePathPrefix = fileRelativePrefix;
-                    }
-
-                    //为了防止文件重复
-                    String uuid = commonUtil.getUUID();
-                    String newFileName = uuid + "uuid_" + fileName;
-
-                    String subPath =  "/" + newFileName;
-                    String destPath =  uploadPath + subPath;
-
-                    File dest = new File(destPath);
-
-                    if(!dest.getParentFile().exists()){
-                        dest.getParentFile().mkdirs();
-                    }
-                    file.transferTo(dest);
-                    HashMap<String, Object> resultMap = new HashMap<>();
-
-                    resultMap.put("fileName",fileName);
-                    resultMap.put("filePath",relativePathPrefix + subPath);
-                    resultMap.put("success",true);
-                    retList.add(resultMap);
-                }catch (IOException e) {
-                    log.error("上传异常:{}",e);
-                    HashMap<String, Object> resultMap = new HashMap<>();
-                    resultMap.put("success",false);
-                    resultMap.put("fileName",file.getName());
-                    retList.add(resultMap);
-                    e.printStackTrace();
-//                    continue;
-                    return  new ResultData(-1,"上传失败",false);
+                String uploadPath = "";
+                String relativePathPrefix = "";
+                if ("image".equals(type)) {
+                    uploadPath = env.getProperty("image_upload");
+                    relativePathPrefix = imageRelativePrefix;
+                } else {
+                    uploadPath = env.getProperty("file_upload");
+                    relativePathPrefix = fileRelativePrefix;
                 }
+
+                //为了防止文件重复
+                String uuid = commonUtil.getUUID();
+                String newFileName = uuid + "uuid_" + fileName;
+
+                String subPath = "/" + newFileName;
+                String destPath = uploadPath + subPath;
+
+                File dest = new File(destPath);
+
+                if (!dest.getParentFile().exists()) {
+                    dest.getParentFile().mkdirs();
+                }
+                file.transferTo(dest);
+                HashMap<String, Object> resultMap = new HashMap<>();
+
+                resultMap.put("fileName", fileName);
+                resultMap.put("filePath", relativePathPrefix + subPath);
+                resultMap.put("success", true);
+                retList.add(resultMap);
+            } catch (IOException e) {
+                log.error("上传异常:{}", e);
+                HashMap<String, Object> resultMap = new HashMap<>();
+                resultMap.put("success", false);
+                resultMap.put("fileName", file.getName());
+                retList.add(resultMap);
+                e.printStackTrace();
+//                    continue;
+                return new ResultData(-1, "上传失败", false);
             }
         }
-        return new ResultData(200,"上传成功", true,retList);
+        return new ResultData(200, "上传成功", true, retList);
     }
 
-    @RequestMapping(value = "/download",method = RequestMethod.GET)
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
     public String downLoad(HttpServletResponse response, @RequestParam(value = "filePath") String filePath) {
         try {
 
@@ -221,11 +203,11 @@ public class FileWeb {
             String absPath = uploadPath + filePath;
 
             File file = new File(absPath);
-            if(file.exists()){
+            if (file.exists()) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("application/force-download");
                 response.setContentType("application/octet-stream");
-                response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode(fileName,"UTF-8"));
+                response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode(fileName, "UTF-8"));
 
                 byte[] buffer = new byte[1024];
                 FileInputStream fis = null;
@@ -236,7 +218,7 @@ public class FileWeb {
                     bis = new BufferedInputStream(fis);
                     os = response.getOutputStream();
                     int i = bis.read(buffer);
-                    while(i != -1){
+                    while (i != -1) {
                         os.write(buffer);
                         i = bis.read(buffer);
                     }
@@ -249,13 +231,13 @@ public class FileWeb {
                     bis.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }finally {
+                } finally {
                     fis.close();
                 }
             }
             return null;
-        }catch (Exception e){
-            log.error("下载异常",e);
+        } catch (Exception e) {
+            log.error("下载异常", e);
             return "下载异常";
         }
     }
