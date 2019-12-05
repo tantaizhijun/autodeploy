@@ -44,13 +44,13 @@ public class SqlService {
             String id = (String) map.get("id");
             if (StringUtils.isEmpty(id)) {
                 log.error("id为空，找不到对应sql");
-                return new ResultData(-1, "id为空, 无法匹配sql!", false);
+                return new ResultData(-1, "id为空, 无法匹配sql!", false,new ArrayList<>());
             }
             Optional<CaseBaseSql> optional = sqlRepository.findById(id);
 
             if (!optional.isPresent()) {
                 log.error("根据id匹配sql失败");
-                return new ResultData(-1, "根据id匹配sql失败", false);
+                return new ResultData(-1, "根据id匹配sql失败", false,new ArrayList<>());
             }
             CaseBaseSql onlineexamSql = optional.get();
             String sql = onlineexamSql.getSql();
@@ -94,7 +94,7 @@ public class SqlService {
             return new ResultData(200,"查询成功",true,DbUtil.getStringListMap(result));
         } catch (Exception e) {
             log.error("查询异常" + e);
-            return new ResultData(-1, "查询异常", false);
+            return new ResultData(-1, "查询异常", false,new ArrayList<>());
         }
     }
 
