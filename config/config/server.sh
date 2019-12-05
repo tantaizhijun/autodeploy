@@ -6,7 +6,7 @@ PRG_KEYWORD=casebase
 PRG_HOME=/ainmc/work/casebase
 PRG=$PRG_HOME/server.sh
 
-JAVA_HOME=/aifs01/work/bigdata/jdk1.8.0_111
+JAVA_HOME=/usr
 LOGBACK="--logging.config=$PRG_HOME/config/logback.xml"
 #PRG_RUN_USER=nmcuser
 jvmOpt="-Xms1024m -Xmx1024m -XX:PermSize=512M -XX:MaxPermSize=1024m"

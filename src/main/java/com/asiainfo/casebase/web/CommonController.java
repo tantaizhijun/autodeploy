@@ -1,6 +1,8 @@
 package com.asiainfo.casebase.web;
 
 
+import com.asiainfo.casebase.config.jwt.PassToken;
+import com.asiainfo.casebase.config.jwt.TokenService;
 import com.asiainfo.casebase.entity.casUser.CasUser;
 import com.asiainfo.casebase.responseEntity.ResultData;
 import com.asiainfo.casebase.service.SqlService;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -39,6 +42,9 @@ public class CommonController {
     @Autowired
     private SqlService sqlService;
 
+    @Autowired
+    private TokenService tokenService;
+
 
     /***
      * @Description 从cas中获取用户
@@ -50,6 +56,10 @@ public class CommonController {
         if(attribute != null) {
             Assertion assertion = (Assertion)attribute;
             String id = assertion.getPrincipal().getName();
+
+            Cookie[] cookies = request.getCookies();
+
+
             CasUser casUser = userService.findUserFromCas();
 //            try {
 //                ResultData data = userService.getAuthedInfo(id);
@@ -66,6 +76,7 @@ public class CommonController {
     /**
      * 单点登录
      **/
+    @PassToken
     @RequestMapping(value="/login",method= RequestMethod.GET)
     public void login(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
 
@@ -74,13 +85,24 @@ public class CommonController {
         if(null != attribute) {
             Assertion assertion = (Assertion)attribute;
             id = assertion.getPrincipal().getName();
-
-            Map<String, Object> att = assertion.getPrincipal().getAttributes();
-        } else {
-            log.error("登录失败");
+            CasUser casUser = userService.findUserById(id);
+            if(casUser == null) {
+                log.error("登录失败,用户不存在!");
+                //return new ResultData(401,"登录失败,用户不存在!",false);
+            } else {
+                String token = tokenService.getToken(casUser);
+                log.info("token",token);
+                Cookie cookie = new Cookie("token",token);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
         }
-        //重定向
+
+        //        //重定向
         response.sendRedirect(env.getProperty("success"));
+
+        //return new ResultData(401,"登录失败",false);
+
     }
 
 
@@ -88,17 +110,21 @@ public class CommonController {
      * @Description 单点登出
      **/
     @RequestMapping(value = "/logout",method = RequestMethod.GET)
-    public void loginOut(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
+    public ResultData loginOut(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
         try {
             session.removeAttribute("_const_cas_assertion_");
             session.invalidate();
 
-            ResponseEntity<String> forEntity = restTemplate.getForEntity(env.getProperty("cas.server-url-prefix")+ "logout", String.class);
-            log.info("cas logout: " + forEntity);
-            response.sendRedirect(env.getProperty("success"));
+            Cookie cookie = new Cookie("token", "");
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            String logoutUrl = env.getProperty("cas.server-url-prefix") + "/logout?service=" + env.getProperty("success");
+            return new ResultData(200,"退出成功",true,logoutUrl);
 
         }catch (Exception e){
             log.error("退出异常：" + e.toString());
+            return new ResultData(-1,"退出失败",false);
         }
     }
 

@@ -89,7 +89,7 @@ public class FileWeb {
     /**
      * 实现文件上传
      */
-    @RequestMapping(value = "upload")
+    @RequestMapping(value = "upload",method = RequestMethod.POST)
     public ResultData upload(@RequestParam("file") MultipartFile file,
                              @RequestParam("type") String type) {
         String fileName = file.getOriginalFilename();

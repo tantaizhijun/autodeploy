@@ -1,6 +1,5 @@
 package com.asiainfo.casebase.web;
 
-import com.asiainfo.casebase.entity.casebase.NmCaseLibraryCurVal;
 import com.asiainfo.casebase.entity.casebase.NmCaseLibraryDraftVal;
 import com.asiainfo.casebase.responseEntity.ResultData;
 import com.asiainfo.casebase.service.draftService.DraftService;
