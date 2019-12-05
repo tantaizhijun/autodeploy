@@ -71,7 +71,7 @@ public class DbUtil {
     public static List<Map<String,Object>> getStringListMap(List<Map<String, Object>> obj){
         List<Map<String, Object>> result;
         if (obj == null)
-            return null;
+            return new ArrayList<>();
         else {
             result = new ArrayList<Map<String, Object>>(obj.size());
             for (Map<String, Object> map : obj) {
