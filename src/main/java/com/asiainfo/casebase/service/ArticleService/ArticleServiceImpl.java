@@ -70,7 +70,13 @@ public class ArticleServiceImpl implements ArticleService {
 
         libraryHisRepository.save(libraryHisVal);
 
-        return new ResultData(200, "保存成功", true);
+        String msg = "";
+        if (caseLibraryCur.getId() == null) {
+            msg = "发帖";
+        } else {
+            msg = "修改";
+        }
+        return new ResultData(200, msg + "成功", true);
     }
 
     @Override
