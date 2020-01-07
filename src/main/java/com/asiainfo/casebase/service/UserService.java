@@ -79,37 +79,4 @@ public class UserService {
         return "";
     }
 
-
-
-    /**
-     * @Description 获取权限
-     **/
-    public ResultData getAuthedInfo(String username){
-
-        HashMap<Object, Object> map = new HashMap<>();
-
-        map.put("system_name","tycj");
-        map.put("user_id",username);
-        JSONObject body = null;
-        try {
-            for (int i = 0; i < 3; i++) {
-                ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity(env.getProperty("authInfo"), map, JSONObject.class);
-                if(responseEntity.getStatusCodeValue() == 200) {
-                    body = responseEntity.getBody();
-                    if("200".equals(String.valueOf(body.get("status")))) {
-                        Object data = body.get("data");
-                        return new ResultData(200,"查询成功",true,data);
-                    } else {
-                        log.error("第" + (i+1) + "次获取权限信息失败，原因：" + body.get("message"));
-                    }
-                } else {
-                    log.error("第" + (i+1) + "次请求权限失败");
-                }
-            }
-        }catch (Exception e){
-            log.error("请求权限异常");
-        }
-        return new ResultData(-1,body == null ? null:String.valueOf(body.get("message")),false,body == null ? null : body.get("data"));
-    }
-
 }

@@ -56,17 +56,7 @@ public class CommonController {
         if(attribute != null) {
             Assertion assertion = (Assertion)attribute;
             String id = assertion.getPrincipal().getName();
-
-            Cookie[] cookies = request.getCookies();
-
-
             CasUser casUser = userService.findUserFromCas();
-//            try {
-//                ResultData data = userService.getAuthedInfo(id);
-//                casUser.setAuth(data.getData());
-//            }catch (Exception e){
-//                log.error("获取权限信息失败");
-//            }
             return new ResultData(200,"登录成功",true,casUser);
         } else {
             return new ResultData(302,"登录失败",false,null);
@@ -88,21 +78,18 @@ public class CommonController {
             CasUser casUser = userService.findUserById(id);
             if(casUser == null) {
                 log.error("登录失败,用户不存在!");
-                //return new ResultData(401,"登录失败,用户不存在!",false);
             } else {
-                String token = tokenService.getToken(casUser);
+                String token = tokenService.createToken(casUser);
                 log.info("token",token);
                 Cookie cookie = new Cookie("token",token);
                 cookie.setPath("/");
                 response.addCookie(cookie);
+
+                HttpSession session1 = request.getSession();
+                session1.setAttribute("token",token);
             }
         }
-
-        //        //重定向
         response.sendRedirect(env.getProperty("success"));
-
-        //return new ResultData(401,"登录失败",false);
-
     }
 
 

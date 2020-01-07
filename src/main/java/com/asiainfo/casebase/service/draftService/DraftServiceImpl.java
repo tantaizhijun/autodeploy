@@ -5,6 +5,8 @@ import com.asiainfo.casebase.entity.casebase.NmCaseLibraryDraftVal;
 import com.asiainfo.casebase.repository.casebase.CaseLibraryDraftRepository;
 import com.asiainfo.casebase.responseEntity.ResultData;
 import com.asiainfo.casebase.service.UserService;
+import com.asiainfo.casebase.service.logsService.LogService;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,9 @@ public class DraftServiceImpl implements DraftService {
 
     @Autowired
     private CaseLibraryDraftRepository draftRepository;
+
+    @Autowired
+    private LogService logService;
 
     /**
      * @Desc 保存或更新
@@ -41,7 +46,10 @@ public class DraftServiceImpl implements DraftService {
         draftVal.setUpdateBy(casUser.getId());
         draftVal.setUpdateByCn(casUser.getName());
         draftVal.setUpdateTime(date);
-        draftRepository.save(draftVal);
+        NmCaseLibraryDraftVal val = draftRepository.save(draftVal);
+        String operType = draftVal.getId() ==null ? "新增" : "修改";
+        logService.save("CASEBASE:nm_case_library_draft_val",val.getId().toString(),operType,operType+"草稿","成功",
+                operType+"草稿",1,0,casUser.getId());
 
         return new ResultData(200,"保存成功",true);
     }
@@ -52,5 +60,9 @@ public class DraftServiceImpl implements DraftService {
     @Override
     public void delete(Long draftId) {
         draftRepository.deleteById(draftId);
+
+        CasUser casUser = userService.findUserFromCas();
+        logService.save("CASEBASE:nm_case_library_draft_val", draftId.toString(),"删除","删除草稿","成功",
+                "删除草稿",1,0,casUser.getId());
     }
 }

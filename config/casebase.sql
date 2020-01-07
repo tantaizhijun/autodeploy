@@ -87,3 +87,20 @@ CREATE TABLE `case_base_sql` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`sql_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'sql配置表';
+
+-- 操作日志表
+CREATE TABLE `nm_web_oper_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `oper_tab` varchar(255) NOT NULL COMMENT '操作表名',
+  `oper_tab_seq` varchar(255) NOT NULL COMMENT '操作记录id',
+  `oper_type` varchar(255) NOT NULL COMMENT '操作类型',
+  `descr` varchar(255) DEFAULT NULL COMMENT '操作描述',
+  `oper_result` varchar(255) NOT NULL COMMENT '操作结果',
+  `oper_msg` varchar(255) DEFAULT NULL COMMENT '操作消息',
+  `success_cnt` int(11) NOT NULL COMMENT '成功记录数',
+  `fail_cnt` int(11) NOT NULL COMMENT '失败记录数',
+  `oper_by` varchar(255) NOT NULL COMMENT '操作人',
+  `oper_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+  `created` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '入库时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';

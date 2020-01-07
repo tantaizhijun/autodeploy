@@ -18,7 +18,7 @@ public class TokenService {
     /**
      * @Desc token的生成方法
      **/
-    public String getToken(CasUser user) {
+    public String createToken(CasUser user) {
         String token="";
         try {
             token= JWT.create().withAudience(user.getId())
