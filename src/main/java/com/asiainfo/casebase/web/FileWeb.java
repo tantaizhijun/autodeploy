@@ -1,6 +1,5 @@
 package com.asiainfo.casebase.web;
 
-import com.alibaba.fastjson.JSONObject;
 import com.asiainfo.casebase.responseEntity.ResultData;
 import com.asiainfo.casebase.utils.commonUtil;
 import io.swagger.annotations.ApiModel;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,46 +46,6 @@ public class FileWeb {
     private String fileRelativePrefix;
 
 
-    @RequestMapping("/upfile")
-    @ResponseBody
-    public void umeditorUpload(@RequestParam("upfile") MultipartFile file,
-                               @RequestParam("type") String type,
-                               HttpServletRequest request,
-                               HttpServletResponse response) throws IllegalStateException, IOException {
-
-
-        String uploadPath = "";
-        if ("image".equals(type)) {
-            uploadPath = env.getProperty("image_upload");
-        } else {
-            uploadPath = env.getProperty("file_upload");
-        }
-        String newFileName = commonUtil.getUUID() + "uuid_" + file.getOriginalFilename();
-
-        File dir = new File(uploadPath, newFileName);
-
-        String src = uploadPath + "/" + newFileName;
-
-        JSONObject json = new JSONObject();
-        if (!dir.exists()) {
-            dir.mkdirs();
-            json.put("state", "SUCCESS");
-            json.put("original", file.getOriginalFilename());
-            json.put("size", file.getSize());
-            json.put("url", src);
-            json.put("title", newFileName);
-        } else {
-            json.put("state", "FALSE");
-        }
-        file.transferTo(dir);
-        response.setContentType("text/html; charset=UTF-8");
-
-        PrintWriter writer = response.getWriter();
-        writer.write(json.toString());
-        writer.close();
-    }
-
-
     /**
      * 实现文件上传
      */
@@ -93,9 +53,12 @@ public class FileWeb {
     public ResultData upload(@RequestParam("file") MultipartFile file,
                              @RequestParam("type") String type) {
         String fileName = file.getOriginalFilename();
+        if(!checkFileExt(fileName)) {
+            return new ResultData(-1,"不允许的文件格式",false);
+        }
+
         String uploadPath = "";
         String relativePathPrefix = "";
-
         if ("image".equals(type)) {
             uploadPath = env.getProperty("image_upload");
             relativePathPrefix = imageRelativePrefix;
@@ -103,6 +66,7 @@ public class FileWeb {
             uploadPath = env.getProperty("file_upload");
             relativePathPrefix = fileRelativePrefix;
         }
+
         //为了防止文件重复
         String uuid = commonUtil.getUUID();
         String newFileName = uuid + "uuid_" + fileName;
@@ -144,6 +108,14 @@ public class FileWeb {
         if (files.isEmpty()) {
             return new ResultData(-1, "上传文件为空", false);
         }
+        //文件类型验证
+        Object[] fileNames = files.stream().map(file -> file.getOriginalFilename()).toArray();
+        for (int i = 0; i < fileNames.length; i++) {
+            if(!checkFileExt(fileNames[i].toString())) {
+                return new ResultData(-1,"存在不允许的文件格式",false);
+            }
+        }
+
         int i = 0;
         ArrayList<Object> retList = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -199,9 +171,14 @@ public class FileWeb {
         try {
 
             String fileName = filePath.substring(filePath.indexOf("uuid_") + 5);
+            if(fileName.contains("../") || fileName.contains("./") || fileName.contains("..\\")||fileName.contains(".\\")) {
+                return "文件名参数存在非法字符";
+            }
+            if(!checkFileExt(fileName)) {
+                return "不被允许下载的文件格式";
+            }
             String uploadPath = env.getProperty("downloadPath");
             String absPath = uploadPath + filePath;
-
             File file = new File(absPath);
             if (file.exists()) {
                 response.setCharacterEncoding("UTF-8");
@@ -242,4 +219,17 @@ public class FileWeb {
         }
     }
 
+    private boolean checkFileExt(String fileName) {
+        String allowedFileExt = env.getProperty("allowedFileExt");
+        allowedFileExt = allowedFileExt.toLowerCase();
+
+        String[] allowedExtArr = allowedFileExt.split(",");
+        String ext = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+        ext = ext.toLowerCase();
+
+        if(Arrays.asList(allowedExtArr).contains(ext)) {
+            return true;
+        }
+        return false;
+    }
 }

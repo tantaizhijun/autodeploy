@@ -79,4 +79,5 @@
         <appender-ref ref="error"/>
         <!--将名为STDOUT的appender添加到root logger下 -->
     </root>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
 </configuration>
