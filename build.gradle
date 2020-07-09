@@ -15,9 +15,6 @@ repositories {
 dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 
 	compile("org.springframework:spring-jdbc")
@@ -27,10 +24,5 @@ dependencies {
 
 	compile('org.projectlombok:lombok')
 	compile('org.apache.commons:commons-lang3:3.4')
-
-	compile group: 'com.auth0', name: 'java-jwt', version: '3.4.0'
-	compile('net.unicon.cas:cas-client-autoconfig-support:2.1.0-GA')
-
-	compile group: 'io.springfox', name: 'springfox-swagger2', version:'2.7.0'
-	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+	
 }

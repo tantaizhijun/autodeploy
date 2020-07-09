@@ -2,8 +2,8 @@
 #description: springboot_redis
 export LANG=zh_CN.UTF8
 
-PRG_KEYWORD=casebase
-PRG_HOME=/ainmc/work/casebase
+PRG_KEYWORD=autodeploy
+PRG_HOME=/ainmc/work/autodeploy
 PRG=$PRG_HOME/server.sh
 
 JAVA_HOME=/usr
@@ -12,7 +12,7 @@ LOGBACK="--logging.config=$PRG_HOME/config/logback.xml"
 jvmOpt="-Xms1024m -Xmx1024m -XX:PermSize=512M -XX:MaxPermSize=1024m"
 pidFile=$PRG_HOME/server.pid
 
-MAIN_CLASS=$PRG_HOME/casebase-0.0.1-SNAPSHOT.jar
+MAIN_CLASS=$PRG_HOME/autodeploy-0.0.1-SNAPSHOT.jar
 cd $PRG_HOME
 function start(){
         echo "will start $PRG_KEYWORD"
